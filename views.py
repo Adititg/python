@@ -138,7 +138,7 @@ def userPrivacySetting(request):
 
 """
 Method:             __addPrivacySetting
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       06-06-2018
 Purpose:            Add user Privacy setting
 Params:             null
@@ -183,9 +183,6 @@ def addUserPrivacy(request):
                 __addPrivacySetting(request.POST['privacy_event_type_1'],request.POST['privacy_type_id_1'],currentUser.id)
                 __addPrivacySetting(request.POST['privacy_event_type_2'],request.POST['privacy_type_id_2'],currentUser.id)
                 __addPrivacySetting(request.POST['privacy_event_type_3'],request.POST['privacy_type_id_3'],currentUser.id)
-                __addPrivacySetting(request.POST['privacy_event_type_4'],request.POST['privacy_type_id_4'],currentUser.id)
-                __addPrivacySetting(request.POST['privacy_event_type_5'],request.POST['privacy_type_id_5'],currentUser.id)
-                __addPrivacySetting(request.POST['privacy_event_type_6'],request.POST['privacy_type_id_6'],currentUser.id)
                 messages.success(request, 'Information has been saved successfully')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
