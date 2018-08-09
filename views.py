@@ -20,7 +20,7 @@ from django.views.decorators.cache import cache_control
 
 """
 Method:             settingStat
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       06-07-2018
 Purpose:            Setting data
 Params:             []
@@ -47,8 +47,8 @@ def __settingStat(request):
 
 """
 Method:             getAllUsersData
-Developer:          Bhushan
-Created Date:       20-06-2018
+Developer:          Aditi
+Created Date:       20-07-2018
 Purpose:            User data for input search
 Params:             null
 Return:             [list]
@@ -69,8 +69,8 @@ def getAllUsersData(request):
 """end function getAllUsersData"""
 
 """
-Method:             getAllUsersByName
-Developer:          Bhushan
+Method:             getUsersByName
+Developer:          Aditi
 Created Date:       20-06-2018
 Purpose:            User data for input search
 Params:             null
@@ -95,7 +95,7 @@ def getUsersByName(request):
 
 """
 Method:             userPrivacySetting
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       17-06-2018
 Purpose:            User forgot password and send email to rest password
 Params:             null
@@ -155,8 +155,8 @@ def __addPrivacySetting(evetType, privacyType, userId):
 
 """
 Method:             addUserPrivacy
-Developer:          Bhushan
-Created Date:       06-06-2018
+Developer:          Aditi
+Created Date:       06-07-2018
 Purpose:            Add user Privacy
 Params:             null
 Return:             CMS []
@@ -194,7 +194,7 @@ def addUserPrivacy(request):
 
 """
 Method:             loadUsersByName
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       19-07-2018
 Purpose:            Ajax Method to load data on search to block user
 Params:             [name]
@@ -227,7 +227,7 @@ def loadUsersByName(request):
 
 """
 Method:             blockUnblockUsers
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       19-07-2018
 Purpose:            block and unblock user
 Params:             [request]
@@ -273,7 +273,7 @@ def blockUnblockUsers(request):
 
 """
 Method:             getSpecificUsers
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       19-07-2018
 Purpose:            get user's specific contacts
 Params:             [request]
@@ -285,9 +285,13 @@ def getSpecificUsers(request):
         hashids = Hashids(min_length=16)
         if request.method == 'GET':
             privacyType = request.GET.get('privacyType')
-            cursor = connection.cursor()
-            cursor.execute("SELECT auth_user.id id,auth_user.id, auth_user.first_name, auth_user.last_name, profile.profile_image FROM auth_user LEFT JOIN user_specific_contacts ON auth_user.id = user_specific_contacts.specific_user_id LEFT JOIN profile ON auth_user.id = profile.user_id Where user_specific_contacts.user_id = %s AND user_specific_contacts.privacytype_id = %s AND auth_user.id != 1 ORDER BY auth_user.id ASC", [request.user.id, privacyType])
-            specificUserList = cursor.fetchall()
+            try:
+                specificUserList = UserSpecificContacts.objects.filter(specific_user_id = request.user.id, user_type = privacyType)
+                userCount = UserSpecificContacts.objects.filter(user_id = request.user.id).count()
+            except UserSpecificContacts.DoesNotExist:
+                userData = None
+                userCount = 0
+
             specificUserData = []
             for user in specificUserList:
                 firstid = user[0]
@@ -304,7 +308,7 @@ def getSpecificUsers(request):
 
 """
 Method:             deleteSpecificUser
-Developer:          Bhushan
+Developer:          Aditi
 Created Date:       19-07-2018
 Purpose:            delete specific user
 Params:             [id]
@@ -320,13 +324,11 @@ def deleteSpecificUser(request):
             currentUser = uId[0]
             try:
                 userData = UserSpecificContacts.objects.filter(specific_user_id = currentUser, user_id = request.user.id)
-                userCount = UserSpecificContacts.objects.filter(user_id = request.user.id).count()
             except UserSpecificContacts.DoesNotExist:
                 userData = None
-                userCount = 0
             if userData:
                 userData.delete()
-            response = HttpResponse(json.dumps({'id': currentUser,'type':1, 'count':userCount, 'success': 'Added successfully'}),content_type='application/json')
+            response = HttpResponse(json.dumps({'id': currentUser,'type':1, 'success': 'Added successfully'}),content_type='application/json')
             response.status_code = 200
             return response
 """end function deleteSpecificUser"""
